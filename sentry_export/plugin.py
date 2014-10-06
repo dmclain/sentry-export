@@ -15,7 +15,7 @@ class ExportPlugin(Plugin):
     conf_key = slug
 
     def actions(self, request, group, action_list, **kwargs):
-        action_list.append((self.title(), self.get_url(group)))
+        action_list.append((self.title, self.get_url(group)))
         return action_list
 
     def view(self, request, group, **kwargs):

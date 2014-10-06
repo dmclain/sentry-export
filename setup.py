@@ -12,7 +12,7 @@ f.close()
 
 setup(
     name='sentry-export',
-    version='0.1.0',
+    version='0.2.0',
     author='Dave McLain',
     author_email='dmclain@gmail.com',
     url='http://github.com/dmclain/sentry-export',
@@ -22,6 +22,9 @@ setup(
     packages=find_packages(),
     install_requires=install_requires,
     entry_points={
+        'sentry.apps': [
+            'sentry_export = sentry_export',
+            ],
         'sentry.plugins': [
             'sentry_export = sentry_export.plugin:ExportPlugin'
         ],
