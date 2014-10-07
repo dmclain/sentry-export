@@ -1,1 +1,30 @@
-<h1>Success!</h1>
+{% extends "sentry/groups/details.html" %}
+
+{% load i18n crispy_forms_filters %}
+
+{% block title %}{{ title }} | {{ block.super }}{% endblock %}
+
+{% block inner %}
+<div class="span12">
+    <div class="page-header">
+        <h3>{{ title }}</h3>
+    </div>
+    <p>Choose data to export.</p>
+    <br />
+    <form class="form-horizontal" action="" method="post" id="export_form">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">{% trans "Export Data" %}</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block meta %}
+    {{ block.super }}
+    <script type="text/javascript">
+        $(document).ready(function(){
+        });
+    </script>
+{% endblock %}
