@@ -1,5 +1,6 @@
 import csv
 from cStringIO import StringIO
+import json
 
 from django.utils.translation import ugettext_lazy as _
 from sentry.plugins import Plugin
@@ -8,6 +9,7 @@ from sentry.plugins.base import Response
 
 from sentry_export import VERSION
 from sentry_export.forms import ExportGroupForm
+from sentry_export.extractor import ValueExtractor
 
 
 class ExportPlugin(Plugin):
@@ -30,28 +32,32 @@ class ExportPlugin(Plugin):
         else:
             form = ExportGroupForm(request.POST)
             if form.is_valid():
-                return self.render_events(form, group)
+                fields = request.POST.getlist('field')
+                return self.render_events(form, fields, group)
         context = {
             'title': self.title,
             'form': form,
+            'sample': json.dumps(group.event_set.all()[0].data.keys(), sort_keys=True, indent=2)
         }
         return self.render("sentry_export/export_form.html", context)
 
-    def render_events(self, form, group):
-        return CSVResponse(form, group.event_set.all())
+    def render_events(self, form, fields, group):
+        return CSVResponse(form, fields, group.event_set.all())
 
     def get_form(self, request, group):
         return ExportGroupForm()
 
 
 class CSVResponse(Response):
-    def __init__(self, form, events):
+    def __init__(self, form, fields, events):
         self.form = form
+        self.fields = fields
         self.events = events
 
     def respond(self, *args, **kwargs):
+        extractor = ValueExtractor(self.fields)
         f = StringIO()
-        writer = csv.DictWriter(f, self.form.get_fields())
+        writer = csv.DictWriter(f, self.fields)
         writer.writeheader()
-        writer.writerows(self.form.get_values(evt) for evt in self.events)
+        writer.writerows(extractor.get_values_dict(evt) for evt in self.events)
         return HttpResponse(f.getvalue(), mimetype="application/csv")

@@ -3,7 +3,6 @@ from setuptools import setup, find_packages
 
 install_requires = [
     'sentry>=6.0.0',
-    'requests>=1.2.0',
 ]
 
 f = open('README.rst')
@@ -12,7 +11,7 @@ f.close()
 
 setup(
     name='sentry-export',
-    version='0.2.0',
+    version='0.4.0',
     author='Dave McLain',
     author_email='dmclain@gmail.com',
     url='http://github.com/dmclain/sentry-export',

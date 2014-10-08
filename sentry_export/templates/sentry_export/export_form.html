@@ -14,10 +14,13 @@
     <form class="form-horizontal" action="" method="post" id="export_form">
         {% csrf_token %}
         {{ form|crispy }}
+        <div id="div_id_field" class="control-group"><label for="id_field" class="control-label requiredField">
+				Field<span class="asteriskField">*</span></label><div class="controls"><input class="span6 textinput textInput" id="id_field" name="field" type="text" data-emoji_font="true" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif, 'Segoe UI Emoji', 'Segoe UI Symbol', Symbola, EmojiSymbols !important;"> </div></div>
         <div class="form-actions">
             <button type="submit" class="btn btn-primary">{% trans "Export Data" %}</button>
         </div>
     </form>
+    <div><pre>{{ sample }}</pre></div>
 </div>
 {% endblock %}
 
