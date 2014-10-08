@@ -15,12 +15,13 @@
         {% csrf_token %}
         {{ form|crispy }}
         <div id="div_id_field" class="control-group"><label for="id_field" class="control-label requiredField">
-				Field<span class="asteriskField">*</span></label><div class="controls"><input class="span6 textinput textInput" id="id_field" name="field" type="text" data-emoji_font="true" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif, 'Segoe UI Emoji', 'Segoe UI Symbol', Symbola, EmojiSymbols !important;"> </div></div>
+                Field<span class="asteriskField">*</span></label><div class="controls"><input class="span6 textinput textInput" id="id_field" name="field" type="text" data-emoji_font="true" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif, 'Segoe UI Emoji', 'Segoe UI Symbol', Symbola, EmojiSymbols !important;"> </div></div>
         <div class="form-actions">
             <button type="submit" class="btn btn-primary">{% trans "Export Data" %}</button>
+            <button type="submit" class="btn btn-preview">{% trans "Preview" %}</button>
         </div>
     </form>
-    <div><pre>{{ sample }}</pre></div>
+    <div><pre id="export_preview">{{ sample }}</pre></div>
 </div>
 {% endblock %}
 
@@ -28,6 +29,16 @@
     {{ block.super }}
     <script type="text/javascript">
         $(document).ready(function(){
+            $('.btn-preview').click(function(evt){
+                evt.preventDefault();
+                $.post(
+                    '/foo/bar/group/2/actions/export/',
+                    $('#export_form').serialize(),
+                    function( data ) {
+                        $("#export_preview").html(data);
+                    }
+                )
+            })
         });
     </script>
 {% endblock %}

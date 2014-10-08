@@ -7,9 +7,12 @@ def safe_get(k, evt):
     val = evt.data
     for k in keys:
         try:
-            val = val.get(k, {})
-        except AttributeError:
-            val = None
+            val = val[k]
+        except:
+            try:
+                val = val[int(k)]
+            except:
+                val = None
     return val
 
 
