@@ -1,6 +1,6 @@
 {% extends "sentry/groups/details.html" %}
 
-{% load i18n crispy_forms_filters %}
+{% load i18n crispy_forms_filters crispy_forms_tags %}
 
 {% block title %}{{ title }} | {{ block.super }}{% endblock %}
 
@@ -14,14 +14,19 @@
     <form class="form-horizontal" action="" method="post" id="export_form">
         {% csrf_token %}
         {{ form|crispy }}
-        <div id="div_id_field" class="control-group"><label for="id_field" class="control-label requiredField">
-                Field<span class="asteriskField">*</span></label><div class="controls"><input class="span6 textinput textInput" id="id_field" name="field" type="text" data-emoji_font="true" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif, 'Segoe UI Emoji', 'Segoe UI Symbol', Symbola, EmojiSymbols !important;"> </div></div>
+        <div id="export_add_field" class="controls">
+            <button class="btn btn-add-field">{% trans "Add Field" %}</button>
+        </div>
         <div class="form-actions">
             <button type="submit" class="btn btn-primary">{% trans "Export Data" %}</button>
             <button type="submit" class="btn btn-preview">{% trans "Preview" %}</button>
         </div>
     </form>
     <div><pre id="export_preview">{{ sample }}</pre></div>
+</div>
+
+<div id="export_field_template" class="control-group" style="display:none">
+    {{ form|crispy }}
 </div>
 {% endblock %}
 
@@ -37,8 +42,13 @@
                     function( data ) {
                         $("#export_preview").html(data);
                     }
-                )
-            })
+                );
+            });
+
+            $('.btn-add-field').click(function(evt){
+                evt.preventDefault();
+                $("#export_field_template").children().clone().insertBefore("#export_add_field").show()
+            });
         });
     </script>
 {% endblock %}
