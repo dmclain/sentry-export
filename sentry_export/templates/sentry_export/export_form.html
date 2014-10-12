@@ -14,6 +14,7 @@
     <form class="form-horizontal" action="" method="POST" id="export_form">
         {% csrf_token %}
         {{ form|crispy }}
+        {{ template_form|crispy }}
         <div id="export_add_field" class="controls">
             <button class="btn btn-add-field">{% trans "Add Field" %}</button>
         </div>
@@ -26,7 +27,7 @@
 </div>
 
 <div id="export_field_template" class="control-group" style="display:none">
-    {{ form|crispy }}
+    {{ template_form|crispy }}
 </div>
 {% endblock %}
 
@@ -38,7 +39,7 @@
                 evt.preventDefault();
                 $.post(
                     '', // post to self
-                    $('#export_form').serialize(),
+                    $("#export_form").serialize() + "&preview=true",
                     function(data) {
                         $("#export_preview").html(data);
                     }

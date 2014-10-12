@@ -1,6 +1,7 @@
 import csv
 from cStringIO import StringIO
 import json
+from datetime import datetime
 
 from django.utils.translation import ugettext_lazy as _
 from sentry.plugins import Plugin
@@ -8,7 +9,7 @@ from django.http import HttpResponse
 from sentry.plugins.base import Response
 
 from sentry_export import VERSION
-from sentry_export.forms import ExportGroupForm
+from sentry_export.forms import ExportGroupForm, FieldTemplateForm
 from sentry_export.extractor import ValueExtractor
 
 
@@ -30,27 +31,35 @@ class ExportPlugin(Plugin):
         if request.method == 'GET':
             form = ExportGroupForm()
         else:
-            form = ExportGroupForm(request.POST)
-            if form.is_valid():
-                fields = request.POST.getlist('field')
-                return self.render_events(form, fields, group)
+            fields = request.POST.getlist('field')
+            if request.POST.get('preview'):
+                return self.render_events(fields, group, count=3)
+            else:
+                form = ExportGroupForm(request.POST)
+                if form.is_valid():
+                    return self.render_events(fields, group, count=form.get_count())
         context = {
             'title': self.title,
             'form': form,
+            'template_form': FieldTemplateForm(),
             'sample': json.dumps(group.event_set.all()[0].data.keys(), sort_keys=True, indent=2)
         }
         return self.render("sentry_export/export_form.html", context)
 
-    def render_events(self, form, fields, group):
-        return CSVResponse(form, fields, group.event_set.all())
+    def render_events(self, fields, group, count=None):
+        events = group.event_set.all()
+        if count is not None:
+            events = events[:count]
+        name = "sentry-%i-%s" % (group.id, datetime.now().replace(microsecond=0).isoformat('-'))
+        return CSVResponse(fields, events, name=name)
 
     def get_form(self, request, group):
         return ExportGroupForm()
 
 
 class CSVResponse(Response):
-    def __init__(self, form, fields, events):
-        self.form = form
+    def __init__(self, fields, events, name="sentry"):
+        self.name = name
         self.fields = fields
         self.events = events
 
@@ -60,4 +69,6 @@ class CSVResponse(Response):
         writer = csv.DictWriter(f, self.fields)
         writer.writeheader()
         writer.writerows(extractor.get_values_dict(evt) for evt in self.events)
-        return HttpResponse(f.getvalue(), mimetype="application/csv")
+        response = HttpResponse(f.getvalue(), mimetype="text/csv")
+        response['Content-Disposition'] = 'attachment; filename="%s.csv"' % self.name
+        return response
