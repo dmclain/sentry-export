@@ -37,7 +37,7 @@
             $('.btn-preview').click(function(evt){
                 evt.preventDefault();
                 $.post(
-                    '/foo/bar/group/2/actions/export/',
+                    '', // post to self
                     $('#export_form').serialize(),
                     function( data ) {
                         $("#export_preview").html(data);
