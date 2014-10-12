@@ -34,7 +34,12 @@
 {% block meta %}
     {{ block.super }}
     <script type="text/javascript">
+        function show_hide_count() {
+            $('#div_id_count').toggle($("#id_export_all").attr('checked'));
+        }
         $(document).ready(function(){
+            show_hide_count();
+            $("#id_export_all").click(show_hide_count);
             $('.btn-preview').click(function(evt){
                 evt.preventDefault();
                 $.post(

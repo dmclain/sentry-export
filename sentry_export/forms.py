@@ -5,7 +5,7 @@ log = logging.getLogger(__name__)
 
 
 class ExportGroupForm(forms.Form):
-    export_all = forms.BooleanField(required=False)
+    export_all = forms.BooleanField(required=False, initial=True)
     count = forms.IntegerField(required=False)
 
     def get_count(self):
