@@ -18,3 +18,9 @@ class FieldTemplateForm(forms.Form):
     field = forms.CharField(
         widget=forms.TextInput(attrs={'class': 'span6'}),
     )
+
+def get_tag_template_form_class(tags):
+    choices = [('tags:%s' % tag, tag) for tag in tags]
+    class TagTemplateForm(forms.Form):
+        field = forms.ChoiceField(choices=choices)
+    return TagTemplateForm

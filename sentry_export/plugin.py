@@ -3,13 +3,14 @@ from cStringIO import StringIO
 import json
 from datetime import datetime
 
-from django.utils.translation import ugettext_lazy as _
-from sentry.plugins import Plugin
 from django.http import HttpResponse
+from django.utils.translation import ugettext_lazy as _
+
+from sentry.plugins import Plugin
 from sentry.plugins.base import Response
 
 from sentry_export import VERSION
-from sentry_export.forms import ExportGroupForm, FieldTemplateForm
+from sentry_export.forms import ExportGroupForm, FieldTemplateForm, get_tag_template_form_class
 from sentry_export.extractor import ValueExtractor
 
 
@@ -42,6 +43,7 @@ class ExportPlugin(Plugin):
             'title': self.title,
             'form': form,
             'template_form': FieldTemplateForm(),
+            'tag_template_form': get_tag_template_form_class(group.get_tags())(),
             'sample': json.dumps(group.event_set.all()[0].data.keys(), sort_keys=True, indent=2)
         }
         return self.render("sentry_export/export_form.html", context)

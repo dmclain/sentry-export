@@ -14,9 +14,11 @@
     <form class="form-horizontal" action="" method="POST" id="export_form">
         {% csrf_token %}
         {{ form|crispy }}
+
         {{ template_form|crispy }}
         <div id="export_add_field" class="controls">
             <button class="btn btn-add-field">{% trans "Add Field" %}</button>
+            <button class="btn btn-add-tag-field">{% trans "Add Tag Field" %}</button>
         </div>
         <div class="form-actions">
             <button type="submit" class="btn btn-primary">{% trans "Export Data" %}</button>
@@ -28,6 +30,9 @@
 
 <div id="export_field_template" class="control-group" style="display:none">
     {{ template_form|crispy }}
+</div>
+<div id="export_tag_field_template" class="control-group" style="display:none">
+    {{ tag_template_form|crispy }}
 </div>
 {% endblock %}
 
@@ -54,6 +59,11 @@
             $('.btn-add-field').click(function(evt){
                 evt.preventDefault();
                 $("#export_field_template").children().clone().insertBefore("#export_add_field").show()
+            });
+
+            $('.btn-add-tag-field').click(function(evt){
+                evt.preventDefault();
+                $("#export_tag_field_template").children().clone().insertBefore("#export_add_field").show()
             });
         });
     </script>
