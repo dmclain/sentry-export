@@ -3,6 +3,13 @@ from django import forms
 
 log = logging.getLogger(__name__)
 
+DEFAULT_CHOICES = (
+    ('event_id', 'Event ID'),
+    ('message', 'Message'),
+    ('datetime', 'Event Time'),
+    ('platform', 'Platform'),
+)
+
 
 class ExportGroupForm(forms.Form):
     export_all = forms.BooleanField(required=False, initial=True)
@@ -14,13 +21,24 @@ class ExportGroupForm(forms.Form):
         return self.cleaned_data['count']
 
 
-class FieldTemplateForm(forms.Form):
+class DefaultFieldForm(forms.Form):
+    field = forms.MultipleChoiceField(
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+        choices=DEFAULT_CHOICES,
+        label="Event Fields",
+        initial=('event_id', 'datetime'),
+        )
+
+
+class RawFieldTemplateForm(forms.Form):
     field = forms.CharField(
         widget=forms.TextInput(attrs={'class': 'span6'}),
+        label="Raw Selector Field"
     )
 
-def get_tag_template_form_class(tags):
+def get_tag_template_form(tags):
     choices = [('tags:%s' % tag, tag) for tag in tags]
     class TagTemplateForm(forms.Form):
         field = forms.ChoiceField(choices=choices)
-    return TagTemplateForm
+    return TagTemplateForm()

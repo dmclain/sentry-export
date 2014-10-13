@@ -10,7 +10,8 @@ from sentry.plugins import Plugin
 from sentry.plugins.base import Response
 
 from sentry_export import VERSION
-from sentry_export.forms import ExportGroupForm, FieldTemplateForm, get_tag_template_form_class
+from sentry_export.forms import (ExportGroupForm, RawFieldTemplateForm,
+    get_tag_template_form, DefaultFieldForm)
 from sentry_export.extractor import ValueExtractor
 
 
@@ -39,11 +40,13 @@ class ExportPlugin(Plugin):
                 form = ExportGroupForm(request.POST)
                 if form.is_valid():
                     return self.render_events(fields, group, count=form.get_count())
+        tags = group.get_tags()
         context = {
             'title': self.title,
             'form': form,
-            'template_form': FieldTemplateForm(),
-            'tag_template_form': get_tag_template_form_class(group.get_tags())(),
+            'defaults_form': DefaultFieldForm(),
+            'raw_template_form': RawFieldTemplateForm(),
+            'tag_template_form': get_tag_template_form(tags),
             'sample': json.dumps(group.event_set.all()[0].data.keys(), sort_keys=True, indent=2)
         }
         return self.render("sentry_export/export_form.html", context)
