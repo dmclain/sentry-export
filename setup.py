@@ -11,7 +11,7 @@ f.close()
 
 setup(
     name='sentry-export',
-    version='0.8.0',
+    version='0.8.1',
     author='Dave McLain',
     author_email='dmclain@gmail.com',
     url='http://github.com/dmclain/sentry-export',

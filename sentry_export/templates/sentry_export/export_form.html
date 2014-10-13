@@ -15,9 +15,9 @@
         {% csrf_token %}
         {{ form|crispy }}
         {{ defaults_form|crispy }}
+        {{ tag_template_form|crispy }}
         <div id="export_add_field" class="controls">
             <button class="btn btn-add-raw-field">{% trans "Add Raw Field" %}</button>
-            <button class="btn btn-add-tag-field">{% trans "Add Tag Field" %}</button>
         </div>
         <div class="form-actions">
             <button type="submit" class="btn btn-primary">{% trans "Export Data" %}</button>
@@ -30,9 +30,6 @@
 <div id="export_raw_field_template" class="control-group" style="display:none">
     {{ raw_template_form|crispy }}
 </div>
-<div id="export_tag_field_template" class="control-group" style="display:none">
-    {{ tag_template_form|crispy }}
-</div>
 {% endblock %}
 
 {% block meta %}
@@ -44,6 +41,7 @@
         $(document).ready(function(){
             show_hide_count();
             $("#id_export_all").click(show_hide_count);
+
             $('.btn-preview').click(function(evt){
                 evt.preventDefault();
                 $.post(
@@ -57,12 +55,8 @@
 
             $('.btn-add-raw-field').click(function(evt){
                 evt.preventDefault();
-                $("#export_raw_field_template").children().clone().insertBefore("#export_add_field").show()
-            });
-
-            $('.btn-add-tag-field').click(function(evt){
-                evt.preventDefault();
-                $("#export_tag_field_template").children().clone().insertBefore("#export_add_field").show()
+                var raw_field = $("#export_raw_field_template").children().clone();
+                raw_field.insertBefore("#export_add_field").show();
             });
         });
     </script>

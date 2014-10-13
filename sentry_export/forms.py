@@ -40,5 +40,11 @@ class RawFieldTemplateForm(forms.Form):
 def get_tag_template_form(tags):
     choices = [('tags:%s' % tag, tag) for tag in tags]
     class TagTemplateForm(forms.Form):
-        field = forms.ChoiceField(choices=choices)
+        field = forms.ChoiceField(
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+        choices=choices,
+        label="Tags",
+        initial=('event_id', 'datetime'),
+        )
     return TagTemplateForm()
