@@ -11,7 +11,7 @@ from sentry.plugins.base import Response
 
 from sentry_export import VERSION
 from sentry_export.forms import (ExportGroupForm, RawFieldTemplateForm,
-    get_tag_template_form, DefaultFieldForm)
+    get_tag_form, DefaultFieldForm, UserFieldForm)
 from sentry_export.extractor import ValueExtractor
 
 
@@ -41,13 +41,21 @@ class ExportPlugin(Plugin):
                 if form.is_valid():
                     return self.render_events(fields, group, count=form.get_count())
         tags = group.get_tags()
+        sample = group.event_set.all()[0].data
+        forms = [
+            form,
+            DefaultFieldForm(),
+        ]
+        if tags:
+            forms.append(get_tag_form(tags))
+        if "sentry.interfaces.User" in sample:
+            forms.append(UserFieldForm())
+        paths = generate_keys(sample)
         context = {
             'title': self.title,
-            'form': form,
-            'defaults_form': DefaultFieldForm(),
+            'forms': forms,
             'raw_template_form': RawFieldTemplateForm(),
-            'tag_template_form': get_tag_template_form(tags),
-            'sample': json.dumps(group.event_set.all()[0].data.keys(), sort_keys=True, indent=2)
+            'sample': json.dumps(paths, sort_keys=True, indent=2)
         }
         return self.render("sentry_export/export_form.html", context)
 
@@ -77,3 +85,13 @@ class CSVResponse(Response):
         response = HttpResponse(f.getvalue(), mimetype="text/csv")
         response['Content-Disposition'] = 'attachment; filename="%s.csv"' % self.name
         return response
+
+
+def generate_keys(sample, prefix=""):
+    result = []
+    for key, value in sample.iteritems():
+        if isinstance(value, dict):
+            result.extend(generate_keys(value, prefix=prefix + str(key) + ":"))
+        else:
+            result.append(prefix + str(key) + ' - ' + str(value.__class__))
+    return result

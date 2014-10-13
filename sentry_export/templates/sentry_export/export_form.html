@@ -13,9 +13,9 @@
     <br />
     <form class="form-horizontal" action="" method="POST" id="export_form">
         {% csrf_token %}
-        {{ form|crispy }}
-        {{ defaults_form|crispy }}
-        {{ tag_template_form|crispy }}
+        {% for form in forms %}
+            {{ form|crispy }}
+        {% endfor %}
         <div id="export_add_field" class="controls">
             <button class="btn btn-add-raw-field">{% trans "Add Raw Field" %}</button>
         </div>

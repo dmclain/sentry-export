@@ -10,6 +10,12 @@ DEFAULT_CHOICES = (
     ('platform', 'Platform'),
 )
 
+USER_CHOICES = (
+    ('sentry.interfaces.User:email', 'Email'),
+    ('sentry.interfaces.User:id', 'ID'),
+    ('sentry.interfaces.User:username', 'Username'),
+)
+
 
 class ExportGroupForm(forms.Form):
     export_all = forms.BooleanField(required=False, initial=True)
@@ -31,15 +37,24 @@ class DefaultFieldForm(forms.Form):
         )
 
 
+class UserFieldForm(forms.Form):
+    field = forms.MultipleChoiceField(
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+        choices=USER_CHOICES,
+        label="User Fields",
+        )
+
+
 class RawFieldTemplateForm(forms.Form):
     field = forms.CharField(
         widget=forms.TextInput(attrs={'class': 'span6'}),
         label="Raw Selector Field"
     )
 
-def get_tag_template_form(tags):
+def get_tag_form(tags):
     choices = [('tags:%s' % tag, tag) for tag in tags]
-    class TagTemplateForm(forms.Form):
+    class TagFieldForm(forms.Form):
         field = forms.ChoiceField(
         required=False,
         widget=forms.CheckboxSelectMultiple,
@@ -47,4 +62,4 @@ def get_tag_template_form(tags):
         label="Tags",
         initial=('event_id', 'datetime'),
         )
-    return TagTemplateForm()
+    return TagFieldForm()
