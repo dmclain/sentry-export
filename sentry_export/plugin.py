@@ -50,7 +50,7 @@ class ExportPlugin(Plugin):
             forms.append(get_tag_form(tags))
         if "sentry.interfaces.User" in sample:
             forms.append(UserFieldForm())
-        paths = generate_keys(sample)
+        paths = generate_keys(sample, exclude=["tags", "sentry.interfaces.User"])
         context = {
             'title': self.title,
             'forms': forms,
@@ -87,11 +87,21 @@ class CSVResponse(Response):
         return response
 
 
-def generate_keys(sample, prefix=""):
+def generate_keys(sample, prefix="", exclude=[]):
     result = []
     for key, value in sample.iteritems():
+        if key in exclude:
+            continue
         if isinstance(value, dict):
             result.extend(generate_keys(value, prefix=prefix + str(key) + ":"))
+        elif isinstance(value, list):
+            if len(list) == 0:
+                result.append(prefix + str(key) + ' - ' + str(value.__class__) + " (empty)")
+            else:
+                if len(value) == 1 and isinstance(value[0], dict):
+                    result.extend(generate_keys(value, prefix=prefix + str(key) + ":0:"))
+                for i, sub_value in enumerate(value):
+                    result.append(prefix + str(key) + ':' + str(i) + ' - ' + str(value[i].__class__))
         else:
             result.append(prefix + str(key) + ' - ' + str(value.__class__))
     return result

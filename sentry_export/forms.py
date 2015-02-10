@@ -52,8 +52,9 @@ class RawFieldTemplateForm(forms.Form):
         label="Raw Selector Field"
     )
 
+
 def get_tag_form(tags):
-    choices = [('tags:%s' % tag, tag) for tag in tags]
+    choices = [('tags:%s' % tag.key, tag.get_label()) for tag in tags]
     class TagFieldForm(forms.Form):
         field = forms.ChoiceField(
         required=False,
