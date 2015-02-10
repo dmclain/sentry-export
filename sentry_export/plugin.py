@@ -41,7 +41,7 @@ class ExportPlugin(Plugin):
                 if form.is_valid():
                     return self.render_events(fields, group, count=form.get_count())
         tags = group.get_tags()
-        sample = group.event_set.all()[0].data
+        sample = group.event_set.order_by('-datetime')[0].data
         forms = [
             form,
             DefaultFieldForm(),
