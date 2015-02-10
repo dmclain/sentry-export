@@ -95,7 +95,7 @@ def generate_keys(sample, prefix="", exclude=[]):
         if isinstance(value, dict):
             result.extend(generate_keys(value, prefix=prefix + str(key) + ":"))
         elif isinstance(value, list):
-            if len(list) == 0:
+            if len(value) == 0:
                 result.append(prefix + str(key) + ' - ' + str(value.__class__) + " (empty)")
             else:
                 if len(value) == 1 and isinstance(value[0], dict):
