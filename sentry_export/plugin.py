@@ -99,7 +99,7 @@ def generate_keys(sample, prefix="", exclude=[]):
                 result.append(prefix + str(key) + ' - ' + str(value.__class__) + " (empty)")
             else:
                 if len(value) == 1 and isinstance(value[0], dict):
-                    result.extend(generate_keys(value, prefix=prefix + str(key) + ":0:"))
+                    result.extend(generate_keys(value[0], prefix=prefix + str(key) + ":0:"))
                 for i, sub_value in enumerate(value):
                     result.append(prefix + str(key) + ':' + str(i) + ' - ' + str(value[i].__class__))
         else:
